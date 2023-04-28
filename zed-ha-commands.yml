@@ -1,0 +1,191 @@
+juju deploy -n 4 --series jammy --channel quincy/stable --config ceph-osd.yaml --constraints tags=compute ceph-osd
+juju deploy -n 3 --to lxd:0,lxd:1,lxd:2  --channel 8.0/stable mysql-innodb-cluster
+
+juju deploy -n 3 --to lxd:0,lxd:1,lxd:2  --config vip=192.168.100.202 --channel 1.8/stable vault
+juju deploy --channel 2.4/stable --config cluster_count=3 hacluster vault-hacluster
+juju deploy --channel 8.0/stable mysql-router vault-mysql-router
+
+
+juju add-relation vault-hacluster:ha vault:ha
+juju add-relation vault-mysql-router:db-router mysql-innodb-cluster:db-router
+juju add-relation vault-mysql-router:shared-db vault:shared-db
+
+
+juju deploy -n 3 --to lxd:0,lxd:1,lxd:2 --config vip=192.168.100.203  --channel zed/stable keystone
+juju deploy  --channel 2.4/stable --config cluster_count=3 hacluster keystone-hacluster
+juju deploy --channel 8.0/stable mysql-router keystone-mysql-router
+
+
+juju add-relation keystone-hacluster:ha keystone:ha
+juju add-relation keystone-mysql-router:db-router mysql-innodb-cluster:db-router
+juju add-relation keystone-mysql-router:shared-db keystone:shared-db
+
+
+ 
+juju deploy -n 3 --to lxd:0,lxd:1,lxd:2 --channel quincy/stable --config ceph-mon.yaml ceph-mon
+ 
+
+
+juju add-relation ceph-mon:osd ceph-osd:mon
+ 
+juju deploy  ntp
+
+ 
+juju deploy  -n 3 --to lxd:0,lxd:1,lxd:2   --channel 3.9/stable rabbitmq-server
+
+ 
+
+juju deploy -n 3 --to lxd:0,lxd:1,lxd:2  --config vip=192.168.100.201 --channel zed/stable glance
+juju deploy  --channel 2.4/stable --config cluster_count=3 hacluster glance-hacluster
+juju add-relation glance-hacluster:ha glance:ha
+
+
+juju deploy --channel 8.0/stable mysql-router glance-mysql-router
+juju add-relation glance-mysql-router:db-router mysql-innodb-cluster:db-router
+juju add-relation glance-mysql-router:shared-db glance:shared-db
+
+ 
+juju deploy -n 3 --to lxd:0,lxd:1,lxd:2  --config vip=192.168.100.200 --channel quincy/stable ceph-radosgw
+juju deploy  --channel 2.4/stable --config cluster_count=3 hacluster ceph-radosgw-hacluster
+juju add-relation ceph-radosgw-hacluster:ha ceph-radosgw:ha
+
+juju add-relation ceph-radosgw:mon ceph-mon:radosgw
+
+ 
+
+juju deploy -n 3 --to 1,2,3 --channel zed/stable --config nova-compute.yaml nova-compute
+
+ 
+juju deploy -n 3 --to lxd:0,lxd:1,lxd:2  --channel zed/stable  --config network-manager=Neutron --config vip=192.168.100.204 nova-cloud-controller
+juju deploy --channel 2.4/stable  --config cluster_count=3 hacluster nova-cloud-controller-hacluster
+juju add-relation nova-cloud-controller-hacluster:ha nova-cloud-controller:ha
+
+juju deploy --channel 8.0/stable mysql-router ncc-mysql-router
+juju add-relation ncc-mysql-router:db-router mysql-innodb-cluster:db-router
+juju add-relation ncc-mysql-router:shared-db nova-cloud-controller:shared-db
+
+
+juju deploy -n 3 --to lxd:0,lxd:1,lxd:2 memcached
+juju add-relation memcached:cache nova-cloud-controller:memcache
+
+
+
+ 
+
+juju deploy  -n 3 --to lxd:0,lxd:1,lxd:2 --config vip=192.168.100.205  --channel zed/stable placement
+
+juju deploy  --channel 2.4/stable --config cluster_count=3 hacluster placement-hacluster
+juju add-relation placement-hacluster:ha placement:ha
+
+juju deploy --channel 8.0/stable mysql-router placement-mysql-router
+juju add-relation placement-mysql-router:db-router mysql-innodb-cluster:db-router
+juju add-relation placement-mysql-router:shared-db placement:shared-db
+
+
+
+ 
+
+juju deploy -n 3 --to lxd:0,lxd:1,lxd:2  --channel 22.09/stable ovn-central
+juju deploy -n 3 --to lxd:0,lxd:1,lxd:2 --config vip=192.168.100.206 --channel zed/stable --config neutron.yaml neutron-api
+
+juju deploy  --channel 2.4/stable  --config cluster_count=3 hacluster neutron-api-hacluster
+juju add-relation neutron-api-hacluster:ha neutron-api:ha
+
+
+juju deploy --channel zed/stable neutron-api-plugin-ovn
+juju deploy --channel 22.09/stable --config neutron.yaml ovn-chassis
+
+juju deploy --channel 8.0/stable mysql-router neutron-api-mysql-router
+juju add-relation neutron-api-mysql-router:db-router mysql-innodb-cluster:db-router
+juju add-relation neutron-api-mysql-router:shared-db neutron-api:shared-db
+
+ 
+
+juju deploy -n 3 --to lxd:0,lxd:1,lxd:2 --config vip=192.168.100.207  --channel zed/stable --config cinder.yaml cinder
+
+juju deploy  --channel 2.4/stable --config cluster_count=3 hacluster cinder-hacluster
+juju add-relation cinder-hacluster:ha cinder:ha
+
+
+
+juju deploy --channel 8.0/stable mysql-router cinder-mysql-router
+juju add-relation cinder-mysql-router:db-router mysql-innodb-cluster:db-router
+juju add-relation cinder-mysql-router:shared-db cinder:shared-db
+
+
+
+ 
+
+
+juju deploy  -n 3 --to lxd:0,lxd:1,lxd:2 --config vip=192.168.100.208  --channel zed/stable openstack-dashboard
+
+juju deploy  --channel 2.4/stable --config cluster_count=3 hacluster openstack-dashboard-hacluster
+juju add-relation openstack-dashboard-hacluster:ha openstack-dashboard:ha
+
+juju deploy --channel 8.0/stable mysql-router openstack-dashboard-mysql-router
+juju add-relation openstack-dashboard-mysql-router:db-router mysql-innodb-cluster:db-router
+juju add-relation openstack-dashboard-mysql-router:shared-db openstack-dashboard:shared-db
+
+
+
+//for observability
+
+ juju deploy elasticsearch
+
+ juju deploy  -n 1 --to lxd:0     elasticsearch
+
+
+ 
+
+juju add-relation prometheus-openstack-exporter:identity-service keystone:identity-service
+juju add-relation keystone:identity-credentials prometheus-openstack-exporter:identity-credentials
+juju add-relation ceph-mon:juju-info telegraf:juju-info
+
+
+juju add-relation nova-compute:juju-info telegraf:juju-info
+
+ 
+
+juju add-relation prometheus2:juju-info telegraf:juju-info
+
+juju add-relation prometheus2:target telegraf:juju-info
+
+juju relate telegraf:prometheus-client prometheus2:target
+juju add-relation prometheus2:alertmanager-service telegraf:prometheus-client
+
+
+juju relate prometheus-openstack-exporter:prometheus-client prometheus2:target
+ juju add-relation prometheus2:target prometheus-openstack-exporter:prometheus-openstack-exporter-service
+
+juju  -n 1 --to lxd:0   deploy prometheus-libvirt-exporter
+
+
+juju add-relation prometheus2:target prometheus-libvirt-exporter:juju-info
+
+
+
+
+
+"prometheus-openstack-exporter prometheus2" could refer to "
+
+prometheus2:alertmanager-service prometheus-openstack-exporter:prometheus-openstack-exporter-service"; 
+prometheus2:blackbox-exporter prometheus-openstack-exporter:prometheus-openstack-exporter-service"; 
+"prometheus2:prometheus-rules prometheus-openstack-exporter:prometheus-rules"; 
+"prometheus2:snmp-exporter prometheus-openstack-exporter:prometheus-openstack-exporter-service"; 
+"prometheus2:target prometheus-openstack-exporter:prometheus-openstack-exporter-service"
+
+
+
+prometheus2:alertmanager-service telegraf:prometheus-client"; 
+"prometheus2:blackbox-exporter telegraf:prometheus-client"; 
+"prometheus2:prometheus-rules telegraf:prometheus-rules"; 
+"prometheus2:snmp-exporter telegraf:prometheus-client";
+ "prometheus2:target telegraf:prometheus-client"; 
+ "telegraf:juju-info prometheus2:juju-info"
+ze@maas:~$ 
+
+
+
+
+juju add-relation kubernetes-control-plane:certificates vault:certificates
+juju add-relation etcd:db kubernetes-control-plane:etcd

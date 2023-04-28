@@ -1,0 +1,75 @@
+**first initialize vault 
+
+
+juju add-relation keystone:certificates vault:certificates
+
+
+juju add-relation glance:identity-service keystone:identity-service
+juju add-relation glance:certificates vault:certificates
+juju add-relation glance:amqp rabbitmq-server:amqp
+juju add-relation ceph-mon:client glance:ceph
+
+
+juju add-relation nova-compute:amqp rabbitmq-server:amqp
+juju add-relation nova-compute:image-service glance:image-service
+
+
+
+juju add-relation  ntp:juju-info nova-compute:juju-info
+juju add-relation ceph-mon:client nova-compute:ceph
+ 
+
+juju add-relation rabbitmq-server:amqp nova-compute:amqp
+juju add-relation glance:image-service nova-compute:image-service
+
+juju add-relation nova-cloud-controller:identity-service keystone:identity-service
+juju add-relation nova-cloud-controller:amqp rabbitmq-server:amqp
+
+juju add-relation nova-cloud-controller:cloud-compute nova-compute:cloud-compute
+juju add-relation nova-cloud-controller:certificates vault:certificates
+juju add-relation placement:placement nova-cloud-controller:placement
+
+
+juju add-relation glance:image-service nova-cloud-controller:image-service
+
+
+juju add-relation placement:identity-service keystone:identity-service
+juju add-relation placement:placement nova-cloud-controller:placement
+juju add-relation placement:certificates vault:certificates
+
+
+juju add-relation neutron-api-plugin-ovn:neutron-plugin neutron-api:neutron-plugin-api-subordinate
+juju add-relation neutron-api-plugin-ovn:ovsdb-cms ovn-central:ovsdb-cms
+juju add-relation ovn-chassis:ovsdb ovn-central:ovsdb
+
+juju add-relation neutron-api:certificates vault:certificates
+juju add-relation neutron-api-plugin-ovn:certificates vault:certificates
+juju add-relation ovn-central:certificates vault:certificates
+juju add-relation ovn-chassis:certificates vault:certificates
+
+juju add-relation nova-cloud-controller:neutron-api neutron-api:neutron-api
+
+juju add-relation  ovn-chassis:nova-compute nova-compute:neutron-plugin
+juju add-relation keystone:identity-service neutron-api:identity-service
+
+
+juju add-relation rabbitmq-server:amqp neutron-api:amqp
+
+juju add-relation cinder:cinder-volume-service nova-cloud-controller:cinder-volume-service
+juju add-relation cinder:identity-service keystone:identity-service
+juju add-relation cinder:amqp rabbitmq-server:amqp
+
+juju add-relation cinder:certificates vault:certificates
+
+
+juju deploy --channel zed/stable cinder-ceph
+juju add-relation cinder-ceph:storage-backend cinder:storage-backend
+juju add-relation cinder-ceph:ceph ceph-mon:client
+juju add-relation cinder-ceph:ceph-access nova-compute:ceph-access
+juju add-relation  nova-compute:ceph      nova-compute:ceph-access
+ 
+
+juju add-relation cinder:image-service glance:image-service
+
+juju add-relation openstack-dashboard:identity-service keystone:identity-service
+juju add-relation openstack-dashboard:certificates vault:certificates

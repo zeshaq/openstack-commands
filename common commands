@@ -1,0 +1,20 @@
+juju bootstrap --bootstrap-series=jammy --constraints tags=juju maas-one maas-controller
+
+juju destroy-model openstack --force --no-wait
+
+
+juju add-model -c maas-controller --config default-series=jammy openstack
+
+juju switch maas-controller:openstack
+
+
+juju status --format=yaml openstack-dashboard | grep public-address | awk '{print $2}' | head -1
+juju run --unit keystone/leader leader-get admin_passwd
+
+
+ watch -n 5 -c juju status nova-compute --color
+ watch -n 5 -c juju status cinder --color
+ watch -n 5 -c juju status --color
+ watch -n 5 -c juju status --color
+  watch -n 5 -c juju status nova-cloud-controller --color
+    watch -n 5 -c juju status ceph-radosgw --color

@@ -1,0 +1,40 @@
+export VAULT_ADDR="http://192.168.100.153:8200"
+export VAULT_ADDR="http://192.168.100.164:8200"
+export VAULT_ADDR="http://192.168.100.156:8200"
+ 
+
+
+vault operator init -key-shares=5 -key-threshold=3
+
+
+ 
+
+
+export VAULT_TOKEN=s.8hazXcoJFP7lo5ARMC71j4Jj
+vault token create -ttl=10m
+
+ juju run-action --wait vault/leader authorize-charm token=s.ZdB3x12PMzuwtpk1UpRLUWiH
+
+juju run-action --wait vault/leader generate-root-ca
+
+ 
+ 
+vault operator unseal zE70ZQIyu300ff16GJB2jDq8oF8Y/gqHSz8fwSu9hpJm
+vault operator unseal FrUV0lGPMJUlnec/AeKH1WJO/kUBjAJ0Z4Scq51QdyFa
+vault operator unseal 0MMVYwo9KVqErWXkU+qccZEf92asQEgvqTRGnPVgpBi8
+
+ 
+
+ 
+
+ 
+Unseal Key 1: zE70ZQIyu300ff16GJB2jDq8oF8Y/gqHSz8fwSu9hpJm
+Unseal Key 2: FrUV0lGPMJUlnec/AeKH1WJO/kUBjAJ0Z4Scq51QdyFa
+Unseal Key 3: 0MMVYwo9KVqErWXkU+qccZEf92asQEgvqTRGnPVgpBi8
+Unseal Key 4: qrlLmKReeQRsSpKkn8cmizgVfatA/HeAbDpwMmokEtYz
+Unseal Key 5: 26IftUX4jvvGGc7rNxDbz0libpxgtlmHrkMLD+XI3Clw
+
+Initial Root Token: s.8hazXcoJFP7lo5ARMC71j4Jj
+
+
+ 

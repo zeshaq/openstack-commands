@@ -1,0 +1,31 @@
+ juju download ceph-mon --channel quincy/stable --filepath ceph-mon
+  juju download ceph-osd --channel quincy/stable --filepath ceph-osd
+  juju download ceph-radosgw --channel quincy/stable --filepath ceph-radosgw
+  juju download mysql-router --channel 8.0/stable --filepath mysql-router
+  juju download cinder --channel yoga/stable --filepath cinder
+
+  juju download cinder-ceph --channel yoga/stable --filepath cinder-ceph
+  
+  
+  juju download glance --channel yoga/stable --filepath glance
+   juju download keystone --channel yoga/stable --filepath keystone
+   
+    juju download neutron-api-plugin-ovn --channel yoga/stable --filepath neutron-api-plugin-ovn
+     juju download neutron-api --channel yoga/stable --filepath neutron-api
+      juju download placement --channel yoga/stable --filepath placement
+       juju download  --channel yoga/stable --filepath 
+       
+       
+       juju download nova-cloud-controller --channel yoga/stable --filepath nova-cloud-controller
+       juju download nova-compute --channel yoga/stable --filepath nova-compute
+       juju download ntp  --filepath ntp
+       juju download openstack-dashboard --channel yoga/stable --filepath openstack-dashboard
+       juju download rabbitmq-server --channel 3.9/stable --filepath rabbitmq-server  
+       juju download mysql-innodb-cluster --channel 8.0/stable --filepath mysql-innodb-cluster
+       juju download ovn-central --channel 22.03/stable --filepath ovn-central
+       juju download ovn-chassis --channel 22.03/stable --filepath ovn-chassis
+       juju download vault --channel 1.7/stable --filepath vault
+ 
+       
+  
+  
